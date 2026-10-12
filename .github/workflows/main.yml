@@ -1,0 +1,27 @@
+name: Build GX6605S USB Image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libncurses-dev rsync cpio bc libssl-dev git wget unzip
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build GX6605S Linux Image
+        run: |
+          make csky_gx6605s_defconfig
+          make -j$(nproc)
+
+      - name: Upload usb.img
+        uses: actions/upload-artifact@v4
+        with:
+          name: gx6605s-usb-image
+          path: output/images/usb.img
